@@ -64,21 +64,46 @@ main:                                   # @main
 ```asm
 hello:
     .string "Hello world!\n"
-hello_end: 
-   .equ len, hello - hello_end
+    len = . - hello
 .text
 .globl _start 
 _start:
-        movq $1, %rax
-        movq $1, %rdi 
-        movq $string, %rsi
-        movq $len, %rdx
-        syscall
-        movq $60, %rax
-        movq $0, %rdi
-        syscall
+    movl $4, %eax
+    movl $1, %ebx
+    movl $hello, %ecx
+    movl $len, %edx
+    int $0x80
+
+    movl $1, %eax
+    movl $0, %edx
+    int $0x80
 ```
 [“Hello world” written using AT&T assembly](https://gist.github.com/gandaro/1966795)
+
+- 3
+```
+hello:
+    .string "Hello world!\n"
+    len = . - hello
+.text
+.global _start
+_start:
+    nop
+    .byte 0x90
+    mov $1, %rax
+    mov $1, %rdi
+    mov $hello, %rsi
+    mov $len, %rdx
+    syscall
+    mov $60, %rax
+    mov $0, %rdi
+    syscall
+```
+
+### 运行方式
+as -o main.o main.S
+ld -o main.out main.o
+./main.out
 
 ## 组成
 - 指示（Directives）以点号开始，用来指示对编译器，连接器，调试器有用的结构信息。指示本身不是汇编指令。例如，.file 只是记录原始源文件名。.data表示数据段(section)的开始地址, 而 .text 表示实际程序代码的起始。.string 表示数据段中的字符串常量。 .globl main指明标签main是一个可以在其它模块的代码中被访问的全局符号 。至于其它的指示可以忽略。
@@ -234,11 +259,15 @@ alice:
 .word 42
 ```
 
+## int
+int表示中断，数字0x80表示中断号。中断将程序流转移到处理该中断的程序，0x80在本例中为中断。在 Linux 中，0x80中断处理程序是内核，用于其他程序对内核进行系统调用。
+
 [ARM 汇编中 .equ 和 .word 有什么区别？](https://stackoverflow.com/questions/21624155/difference-between-equ-and-word-in-arm-assembly)
 
 ## 参考
 - [.cfi_* 汇编指示符](https://blog.csdn.net/zoomdy/article/details/80700750)
 - [x86 汇编/GNU 汇编语法](https://en.wikibooks.org/wiki/X86_Assembly/GNU_assembly_syntax)
+- [x86 汇编/与 Linux 的接口](https://en.wikibooks.org/wiki/X86_Assembly/Interfacing_with_Linux)
 - [CSE374：编程概念和工具-第 20 讲 — x86 汇编中的寻址和算术](https://courses.cs.washington.edu/courses/cse374/16wi/lectures/20-x86_addressing_arithmetic.html)
 - [所有可用的 x86 寻址模式](https://stackoverflow.com/questions/34058101/referencing-the-contents-of-a-memory-location-x86-addressing-modes/34058400#34058400)
 - [不同寻址模式的 AT&T(GNU) 语法与 NASM 语法表](https://stackoverflow.com/questions/6819957/what-does-the-bracket-in-movl-eax-eax-mean/6820015#6820015)
@@ -247,3 +276,5 @@ alice:
 - [GNU 汇编程序](https://en.wikipedia.org/wiki/GNU_Assembler)
 - [x86 汇编语言](https://en.wikipedia.org/wiki/X86_assembly_language#Syntax)
 - [汇编文件中的CFI指令](https://garlicspace.com/2019/07/10/%E6%B1%87%E7%BC%96%E6%96%87%E4%BB%B6%E4%B8%AD%E7%9A%84cfi%E6%8C%87%E4%BB%A4/)
+- [汇编代码中的“int 0x80”是什么意思？](https://stackoverflow.com/questions/1817577/what-does-int-0x80-mean-in-assembly-code)
+- [Linux 上 32 位代码中的“int 0x80”或“syscall”哪个更好？](https://stackoverflow.com/questions/12806584/what-is-better-int-0x80-or-syscall-in-32-bit-code-on-linux)
