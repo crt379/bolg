@@ -80,6 +80,7 @@ _start:
 ```
 [“Hello world” written using AT&T assembly](https://gist.github.com/gandaro/1966795)
 
+
 - 3
 ```
 hello:
@@ -259,7 +260,22 @@ load effective address, 加载有效地址，可以将有效地址传送到指�
 lea这个指令除了获取地址以外，还有一个“奇怪”的用法，它可以用计算地址的方法，实际上对寄存器的值同时完成加法和乘法的计算，相当于一个三元计算，并且只使用一个时钟周期。比如：lea 0x20(,%eax,2) %eax，本来是用来算一个地址，结果被用来一次性的做了一个乘法和一个加法计算。
 ```
 
-leaq .L.str(%rip), %rdi 是一个间接内存访问。基数是%rip，也就是指令寄存器中的值，也就是leaq这行代码的下一行代码的地址。.L.str会被汇编器算出一个直接数来，比如0x20，也就是32个字节。这行指令就等价于：0x20(%rip)。
+leaq .L.str(%rip), %rdi 是一个间接内存访问。基数是%rip，也就是指令寄存器中的值，也就是leaq这行代码的下一行代码的地址。.L.str会被汇编器算出一个直接数来，比如0x20，也就是32个字节。这行指令就等价于：0x20(%rip)。0x20是什么意思？就是这个字符串常量的地址与%rip值的差。这种寻址方式叫做rip相对寻址。因为代码区在下面，静态数据区在上面，所以静态数据的地址一定大于指令的地址。
+
+
+##  syscall 调用约定
+| arch | syscall NR | return | arg0 | arg1 | arg2	| arg3 | arg4 | arg5 |
+| ---- | ------- | ------ | ---- | ---- | ---- | ---- | ---- | ---- |
+| arm |	r7 | r0 | r0 | r1 | r2 | r3 | r4 | r5 |
+| arm64 | x8 | x0 |	x0 | x1 | x2 | x3 |	x4 | x5 |
+| x86 | eax | eax | ebx | ecx | edx | esi | edi | ebp |
+| x86_64 | rax | rax | rdi | rsi | rdx | r10 | r8 |	r9 |
+
+
+## int
+int表示中断，数字0x80表示中断号。中断将程序流转移到处理该中断的程序，0x80在本例中为中断。在 Linux 中，0x80中断处理程序是内核，用于其他程序对内核进行系统调用。
+
+[ARM 汇编中 .equ 和 .word 有什么区别？](https://stackoverflow.com/questions/21624155/difference-between-equ-and-word-in-arm-assembly)
 
 
 ## .equ
@@ -277,6 +293,7 @@ mov $x, %eax
 /* eax == 123 */
 ```
 
+
 ## .word
 .word就像unsigned int在 C 中一样：
 ```
@@ -291,10 +308,6 @@ alice:
 .word 42
 ```
 
-## int
-int表示中断，数字0x80表示中断号。中断将程序流转移到处理该中断的程序，0x80在本例中为中断。在 Linux 中，0x80中断处理程序是内核，用于其他程序对内核进行系统调用。
-
-[ARM 汇编中 .equ 和 .word 有什么区别？](https://stackoverflow.com/questions/21624155/difference-between-equ-and-word-in-arm-assembly)
 
 ## 参考
 - [.cfi_* 汇编指示符](https://blog.csdn.net/zoomdy/article/details/80700750)
