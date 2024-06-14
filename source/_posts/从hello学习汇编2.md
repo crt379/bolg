@@ -311,6 +311,7 @@ alice:
 
 ## 参考
 - [.cfi_* 汇编指示符](https://blog.csdn.net/zoomdy/article/details/80700750)
+- [汇编文件中的CFI指令](https://garlicspace.com/2019/07/10/%E6%B1%87%E7%BC%96%E6%96%87%E4%BB%B6%E4%B8%AD%E7%9A%84cfi%E6%8C%87%E4%BB%A4/)
 - [x86 汇编/GNU 汇编语法](https://en.wikibooks.org/wiki/X86_Assembly/GNU_assembly_syntax)
 - [x86 汇编/与 Linux 的接口](https://en.wikibooks.org/wiki/X86_Assembly/Interfacing_with_Linux)
 - [CSE374：编程概念和工具-第 20 讲 — x86 汇编中的寻址和算术](https://courses.cs.washington.edu/courses/cse374/16wi/lectures/20-x86_addressing_arithmetic.html)
